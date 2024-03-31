@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +66,7 @@ public class KnihaSluzba {
         System.out.println(vyhlednySeznamKnih.toList());
     }
 
-    public void vratSeznamKnihRokuSAutorem(int rokVydaniKVyhledani) {
+    public Stream<Kniha> vratSeznamKnihRokuSAutorem(int rokVydaniKVyhledani) {
 
         List<Kniha> knihy = getSeznamKnih();
         Stream<Kniha> knihyStream = knihy.stream();
@@ -73,9 +74,24 @@ public class KnihaSluzba {
         Stream<Kniha> odpovidajiciZaznam = knihyStream.filter(kniha -> kniha.getRokVydani().equals(String.valueOf(rokVydaniKVyhledani)));
 //        System.out.printf("Pocet nalezených záznamů je %s", odpovidajiciZaznam.count());
 
-        System.out.println(odpovidajiciZaznam.map(Kniha::getNazev).collect(Collectors.toList()));
+        return odpovidajiciZaznam;
+    }
 
+    public void vyhledejKnihyVydaneVRoce(int rokVydaniKVyhledani) {
 
+        vratSeznamKnihRokuSAutorem(rokVydaniKVyhledani);
+        List<Kniha> knihy = getSeznamKnih();
+        Stream<Kniha> knihyStream = knihy.stream();
+
+        Stream<Kniha> odpovidajiciZaznam = knihyStream.filter(kniha -> kniha.getRokVydani().equals(String.valueOf(rokVydaniKVyhledani)));
+        List<Kniha> nazevKnihyRokVydani = odpovidajiciZaznam.map(kniha -> {
+            Kniha vybranaKniha = new Kniha();
+            vybranaKniha.setNazev(kniha.getNazev());
+            vybranaKniha.setAutor(kniha.getAutor());
+            return vybranaKniha;
+        }).toList();
+        System.out.println("V roce " + rokVydaniKVyhledani + " byly vydány tyto knihy:");
+       nazevKnihyRokVydani.forEach(kniha -> System.out.println(kniha.getAutor() +" - " + kniha.getNazev()));
     }
 
 }

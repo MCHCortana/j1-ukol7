@@ -26,5 +26,7 @@ public class Aplikace {
         seznamKnih.vratSeznamKnihRoku(1856);
 
         seznamKnih.vratSeznamKnihRokuSAutorem(1845);
+
+       seznamKnih.vyhledejKnihyVydaneVRoce(1845);
     }
 }
