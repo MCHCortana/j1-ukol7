@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.w3c.dom.ls.LSOutput;
+
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class KnihaSluzba {
@@ -26,10 +25,13 @@ public class KnihaSluzba {
 
     public KnihaSluzba() throws IOException {
         try (InputStream inputStream = KnihaSluzba.class.getResourceAsStream("knihy.json")) {
+            if(inputStream == null){
+                throw new IllegalArgumentException("Soubor nenealezen, zkontorlujte existenci souboru.");
+            }
             ObjectMapper objectMapper = JsonMapper.builder()
                     .addModule(new JavaTimeModule())
                     .build();
-            seznamKnih = objectMapper.readValue(inputStream, new TypeReference<List<Kniha>>() {
+            seznamKnih = objectMapper.readValue(inputStream, new TypeReference<>() {
             });
         } catch (IOException e) {
             System.err.println("Nemohu načíst soubor, někde je chyba");
@@ -43,7 +45,7 @@ public class KnihaSluzba {
         return nazevKnihyZeZaznamu.toList();
     }
 
-    public int vtraPocetKnihVKnihovne() {
+    public int vratPocetKnihVKnihovne() {
         return vratSeznamKnih().size();
     }
 
@@ -61,7 +63,7 @@ public class KnihaSluzba {
         List<Kniha> knihy = getSeznamKnih();
         Stream<Kniha> knihyStream = knihy.stream();
 
-        Stream<Kniha> odpovidajiciZaznam = knihyStream.filter(kniha -> kniha.getRokVydani().equals(String.valueOf(rokVydaniKVyhledani)));
+        Stream<Kniha> odpovidajiciZaznam = knihyStream.filter(kniha -> kniha.getRokVydani() == rokVydaniKVyhledani);
         Stream<String> vyhlednySeznamKnih = odpovidajiciZaznam.map(Kniha::getNazev);
         System.out.println(vyhlednySeznamKnih.toList());
     }
@@ -71,10 +73,9 @@ public class KnihaSluzba {
         List<Kniha> knihy = getSeznamKnih();
         Stream<Kniha> knihyStream = knihy.stream();
 
-        Stream<Kniha> odpovidajiciZaznam = knihyStream.filter(kniha -> kniha.getRokVydani().equals(String.valueOf(rokVydaniKVyhledani)));
-//        System.out.printf("Pocet nalezených záznamů je %s", odpovidajiciZaznam.count());
+        //        System.out.printf("Pocet nalezených záznamů je %s", odpovidajiciZaznam.count());
 
-        return odpovidajiciZaznam;
+        return knihyStream.filter(kniha -> kniha.getRokVydani() == rokVydaniKVyhledani);
     }
 
     public void vyhledejKnihyVydaneVRoce(int rokVydaniKVyhledani) {
@@ -83,7 +84,7 @@ public class KnihaSluzba {
         List<Kniha> knihy = getSeznamKnih();
         Stream<Kniha> knihyStream = knihy.stream();
 
-        Stream<Kniha> odpovidajiciZaznam = knihyStream.filter(kniha -> kniha.getRokVydani().equals(String.valueOf(rokVydaniKVyhledani)));
+        Stream<Kniha> odpovidajiciZaznam = knihyStream.filter(kniha -> kniha.getRokVydani() == rokVydaniKVyhledani);
         List<Kniha> nazevKnihyRokVydani = odpovidajiciZaznam.map(kniha -> {
             Kniha vybranaKniha = new Kniha();
             vybranaKniha.setNazev(kniha.getNazev());
@@ -91,7 +92,7 @@ public class KnihaSluzba {
             return vybranaKniha;
         }).toList();
         System.out.println("V roce " + rokVydaniKVyhledani + " byly vydány tyto knihy:");
-       nazevKnihyRokVydani.forEach(kniha -> System.out.println(kniha.getAutor() +" - " + kniha.getNazev()));
+        nazevKnihyRokVydani.forEach(kniha -> System.out.println(kniha.getAutor() + " - " + kniha.getNazev()));
     }
 
 }

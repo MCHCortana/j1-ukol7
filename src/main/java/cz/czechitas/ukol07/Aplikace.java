@@ -1,10 +1,6 @@
 package cz.czechitas.ukol07;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Spouštěcí třída aplikace
@@ -17,16 +13,12 @@ public class Aplikace {
     public void run() throws IOException {
         KnihaSluzba seznamKnih = new KnihaSluzba();
 
-        System.out.printf("V knihovně je momentálně %s knih.", seznamKnih.vtraPocetKnihVKnihovne());
+        System.out.printf("V knihovně je momentálně %s knih.", seznamKnih.vratPocetKnihVKnihovne());
 
         System.out.println(seznamKnih.vratSeznamKnih());
 
-        System.out.println(seznamKnih.vratSeznamKnihAutora("Božena Němcová"));
+        System.out.println(seznamKnih.vratSeznamKnihAutora("Karel Čapek"));
 
-        seznamKnih.vratSeznamKnihRoku(1856);
-
-        seznamKnih.vratSeznamKnihRokuSAutorem(1845);
-
-       seznamKnih.vyhledejKnihyVydaneVRoce(1845);
+        seznamKnih.vyhledejKnihyVydaneVRoce(1845);
     }
 }
